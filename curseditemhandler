@@ -1,0 +1,33 @@
+=begin
+doomstone/oblivion quartz/urglaes fang handler
+Author: Aethor Whiteaxe
+Version 0.1.2 
+special thanks to Doug/Gnimble for checking my work
+=end
+while(true)
+spirit_proc = Proc.new { |item|
+    # exit proc; conditions not satisifed
+    next if (Char.Prof !~ /Empath|Cleric/ || !Spell[218].known? || !Spell[218].active?)
+    # work
+    fput "tell servant get ##{item.id}"
+    fput "tell servant give ##{item.id} to #{Char.name}"
+    fput "put ##{item.id} in #{Uservars.lootsack}"
+}
+curse_proc = Proc.new { |item|
+    # exit proc; conditions not satisifed
+    next if (!Spell[315].known? || !Spell[315].affordable?)
+    # work
+    fput "get ##{item.id}"
+    Spell[315].cast("##{item.id}")
+    waitcastrt?
+    fput "put ##{item.id} in #{UserVars.lootsack}"
+}
+
+GameObj.loot.each { |item|
+    if (item.type == "gem" && item.name =~ /doomstone|oblivion quartz/)
+        spirit_proc.call(item)
+    elsif (item.type == "gem" && item.name =~ /urglaes fang/)
+        curse_proc.call(item)
+    end
+}
+end
